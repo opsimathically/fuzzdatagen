@@ -1,0 +1,48 @@
+{
+  "name": "@opsimathically/fuzzdatagen",
+  "version": "1.0.6",
+  "description": "Generate fuzz data using existing data, or create from scratch. Tracks injection points in generated data to easily determine what data causes faults.",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "test": "ts-node -r tsconfig-paths/register test/fuzzdatagen.test.ts",
+    "example": "ts-node -r tsconfig-paths/register example/fuzzdatagen.example.ts",
+    "docs": "typedoc"
+  },
+  "keywords": [
+    "fuzz",
+    "fuzzer",
+    "fuzzing",
+    "data",
+    "generation",
+    "gen"
+  ],
+  "homepage": "https://github.com/opsimathically/fuzzdatagen",
+  "devDependencies": {
+    "@types/node": "^22.13.13",
+    "@types/wtfnode": "^0.7.3",
+    "esbuild": "^0.25.0",
+    "eslint": "^9.20.1",
+    "globals": "^15.14.0",
+    "prettier": "^3.5.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.3.6",
+    "typedoc": "^0.28.1",
+    "typedoc-plugin-markdown": "^4.6.0",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.24.0",
+    "wtfnode": "^0.10.0"
+  },
+  "author": "Jason Medeiros",
+  "license": "MIT",
+  "dependencies": {
+    "@opsimathically/garbage": "latest",
+    "@opsimathically/objectsearch": "latest",
+    "@opsimathically/randomdatatools": "latest",
+    "@opsimathically/whatis": "latest",
+    "fast-equals": "^5.2.2"
+  }
+}
