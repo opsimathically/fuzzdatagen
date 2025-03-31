@@ -22,6 +22,8 @@ import {
   objsearch_whatis_extra_data_t
 } from '@opsimathically/objectsearch';
 
+import { deepClone } from '@opsimathically/deepclone';
+
 import {
   randomIntegerBetween,
   randomNegativeIntegerBetween,
@@ -49,10 +51,19 @@ import { FuzzString } from '@src/type_fuzzers/FuzzString.class';
 // %%% Plugin Types %%%%%%%%%%%%%%%%%%%%%%%%%%%
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+type applicable_plugin_target_t = {
+  key: boolean;
+  value: boolean;
+};
+
 type fuzzdata_plugin_info_t = {
   name: string;
   version: string;
   description: string;
+  targets: {
+    key?: boolean;
+    value?: boolean;
+  };
   extra?: unknown;
 };
 
@@ -210,39 +221,77 @@ class FuzzDataGen {
     // %%% Process Non-Primitives %%%%%%%%%%%%%%
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    const objsearch_utils = new ObjectSearchUtils(params.in_data, {
+    const cloned_in_data = deepClone(params.in_data);
+
+    const objsearch_utils = new ObjectSearchUtils(cloned_in_data, {
       whatis_plugins: []
     });
 
-    objsearch_utils.search({
+    // create fuzzdata
+    const fuzzdata: fuzzdata_t = {
+      changeset: [],
+      data: cloned_in_data
+    };
+
+    await objsearch_utils.search({
       key: async function (
         key: any,
         info: on_key_params_t,
         objsearch: ObjectSearch
       ) {
-        // Will trigger on every key-like, of any type, and it's
-        // up to you to work out what you want to do, with the information
-        // and pathing you've been provided.
-        debugger;
+        /*
+        let matching_plugins = await fuzzdatagen_ref.matchApplicablePlugins({
+          data: params.in_data,
+          whatis_data: info.whatis.key,
+          objsearch_info: null as unknown as on_key_params_t,
+          plugin_set: params.gamble_config.plugins
+        });
+        */
+        // fuzzdata.changeset
+        // debugger;
       },
       val: async function (
         val: any,
         info: on_key_params_t,
         objsearch: ObjectSearch
       ) {
-        // will trigger on every value, same as on key.  Do what you want,
-        // how you want on what is encountered.
-        debugger;
+        const matching_plugins = await fuzzdatagen_ref.matchApplicablePlugins({
+          data: val,
+          whatis_data: info.whatis.value,
+          objsearch_info: info,
+          plugin_set: params.gamble_config.plugins
+        });
+        if (matching_plugins.length > 0) {
+          const plugin_index = randomIntegerBetween(
+            0,
+            matching_plugins.length - 1
+          );
+          if (plugin_index === null)
+            throw new Error('FuzzDataGen could not generate a random integer.');
+          if (Number.isInteger(plugin_index)) {
+            // generate data
+            const gendata: gendata_t = await matching_plugins[plugin_index].gen(
+              {
+                data: val,
+                whatis_data: info.whatis.value,
+                objsearch_info: info,
+                plugin_set: params.gamble_config.plugins,
+                parent_gen: fuzzdatagen_ref
+              }
+            );
+
+            // set the fuzzed data in the object
+            objsearch.objSet(cloned_in_data, info.path, gendata.data.new);
+
+            // store the changeset entry
+            fuzzdata.changeset.push(gendata);
+          }
+        }
       }
     });
 
-    // create fuzzdata
-    const fuzzdata: fuzzdata_t = {
-      changeset: [],
-      data: null
-    };
-
     // return the fuzzdata
+    debugger;
     return fuzzdata;
   }
 

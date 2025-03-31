@@ -28,6 +28,9 @@ class NonStringPrimitivesToStrings_FuzzPlug implements fuzzdata_plugin_class_t {
   plugin_info: fuzzdata_plugin_info_t = {
     name: 'non_string_primitives_to_strings',
     version: '1.0.0',
+    targets: {
+      value: true
+    },
     description:
       "Looks at non-string primitives (we consider null a primitive, even though technically it's not), and attempts to convert them to string versions.  Eg. null to 'null', undefined to 'undefined'"
   };

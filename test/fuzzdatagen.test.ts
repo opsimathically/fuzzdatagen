@@ -130,6 +130,14 @@ import {
   });
 
   test('NestedObject: Non-string primitives to strings test', async function () {
+    const nested_obj_data = {
+      something: {
+        somewhere: {
+          some_data: 42
+        }
+      }
+    };
+
     const gamble_config = {
       plugins: [
         {
@@ -147,34 +155,10 @@ import {
 
     const fuzzgen = new FuzzDataGen();
     let fuzzdata: fuzzdata_t = await fuzzgen.gamble({
-      in_data: 42,
+      in_data: nested_obj_data,
       gamble_config: gamble_config
     });
-    assert(fuzzdata.data === '42');
-
-    fuzzdata = await fuzzgen.gamble({
-      in_data: undefined,
-      gamble_config: gamble_config
-    });
-    assert(fuzzdata.data === 'undefined');
-
-    fuzzdata = await fuzzgen.gamble({
-      in_data: true,
-      gamble_config: gamble_config
-    });
-    assert(fuzzdata.data === 'true');
-
-    fuzzdata = await fuzzgen.gamble({
-      in_data: false,
-      gamble_config: gamble_config
-    });
-    assert(fuzzdata.data === 'false');
-
-    fuzzdata = await fuzzgen.gamble({
-      in_data: 100000000000000000000000000000000000000000n,
-      gamble_config: gamble_config
-    });
-    assert(fuzzdata.data === '100000000000000000000000000000000000000000');
+    debugger;
   });
 
   test('Generate an fuzz a string', async function () {

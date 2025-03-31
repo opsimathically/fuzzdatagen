@@ -39,6 +39,7 @@
   "author": "Jason Medeiros",
   "license": "MIT",
   "dependencies": {
+    "@opsimathically/deepclone": "^1.0.0",
     "@opsimathically/garbage": "latest",
     "@opsimathically/objectsearch": "latest",
     "@opsimathically/randomdatatools": "latest",
